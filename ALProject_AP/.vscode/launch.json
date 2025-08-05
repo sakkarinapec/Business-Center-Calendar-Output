@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Microsoft cloud sandbox",
+            "request": "launch",
+            "type": "al",
+            "environmentType": "Sandbox",
+            "environmentName": "Testing",
+            "startupObjectId": 9326,
+            "startupObjectType": "Page",
+            // "startupCompany": "Intern_Apec",
+            "startupCompany": "Cronus Company",
+            "tenant": "d1e37f37-80d5-44a1-b009-00ef6f5338b0", 
+            "breakOnError": "All",
+            "launchBrowser": true,
+            "enableLongRunningSqlStatements": true,
+            "enableSqlInformationDebugger": true,
+            // "schemaUpdateMode": "ForceSync", //บังคับ sync schema แม้จะเสี่ยงกับข้อมูลที่หาย (ระวังมาก)
+            // "schemaUpdateMode": "Synchronize", //(ค่า default) ปรับ schema โดยไม่ลบข้อมูล
+            // "schemaUpdateMode": "Recreate", //ลบ table และข้อมูล แล้วสร้างใหม่ (ใช้เฉพาะใน dev เท่านั้น)
+        }
+    ]
+}
