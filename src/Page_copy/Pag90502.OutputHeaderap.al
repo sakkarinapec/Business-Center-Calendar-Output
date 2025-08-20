@@ -5,9 +5,6 @@ page 90502 "Output Header ap"
     SourceTable = "Production Order";
     // SourceTable = "Item Journal Line";
     UsageCategory = Administration;
-    // InsertAllowed = false;
-    // PageType = Worksheet;
-    // DataCaptionFields = "No.", "Due Date";
 
     layout
     {

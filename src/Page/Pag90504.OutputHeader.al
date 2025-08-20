@@ -5,6 +5,8 @@ page 90504 "Output Header"
     UsageCategory = Documents;
     Caption = 'Output Header Card';
     SourceTable = "Item Journal Line";
+    DelayedInsert = true;
+    InsertAllowed = false; // 🚫 ไม่ให้กด New
 
     layout
     {
@@ -12,6 +14,10 @@ page 90504 "Output Header"
         {
             group(General)
             {
+                field("Order No."; Rec."Order No.")
+                {
+                    ApplicationArea = All;
+                }
                 field("Document No."; Rec."Document No.")
                 {
                     ApplicationArea = All;
@@ -36,6 +42,52 @@ page 90504 "Output Header"
                 field("Journal Template Name"; Rec."Journal Template Name")
                 {
                     ApplicationArea = All;
+                    Lookup = true;
+                    trigger OnLookup(var Text: Text): Boolean
+                    var
+                        ItemJnlTemplate: Record "Item Journal Template";
+                    begin
+                        ItemJnlTemplate.SetRange(Type, ItemJnlTemplate.Type::Output);
+                        if PAGE.RunModal(PAGE::"Item Journal Templates", ItemJnlTemplate) = ACTION::LookupOK then begin
+                            Rec."Journal Template Name" := ItemJnlTemplate."Name";
+                            SetDefaultBatch();
+                            exit(true);
+                        end;
+                        exit(false);
+                    end;
+
+                    trigger OnValidate()
+                    var
+                        ItemJnlTemplate: Record "Item Journal Template";
+                    begin
+                        if Rec."Journal Template Name" = '' then
+                            Error('กรุณาระบุ Journal Template Name');
+
+                        if not ItemJnlTemplate.Get(Rec."Journal Template Name") then
+                            Error('Journal Template Name "%1" ไม่พบในระบบ', Rec."Journal Template Name");
+
+                        SetDefaultBatch();
+                    end;
+                }
+                field("Journal Batch Name"; Rec."Journal Batch Name")
+                {
+                    ApplicationArea = All;
+                    Lookup = true;
+
+                    trigger OnLookup(var Text: Text): Boolean
+                    var
+                        ItemJnlBatch: Record "Item Journal Batch";
+                    begin
+                        if Rec."Journal Template Name" = '' then
+                            Error('กรุณาระบุ Journal Template Name ก่อน');
+
+                        ItemJnlBatch.SetRange("Journal Template Name", Rec."Journal Template Name");
+                        if PAGE.RunModal(PAGE::"Item Journal Batches", ItemJnlBatch) = ACTION::LookupOK then begin
+                            Rec."Journal Batch Name" := ItemJnlBatch.Name;
+                            exit(true);
+                        end;
+                        exit(false);
+                    end;
                 }
                 field("Location Code"; Rec."Location Code")
                 {
@@ -44,11 +96,13 @@ page 90504 "Output Header"
                 field("Work Center No."; Rec."Work Center No.")
                 {
                     ApplicationArea = All;
+                    Editable = true;
                 }
             }
 
             group(Production_Scan_)
             {
+                Caption = 'Production Scan';
                 group("Prdd. Info")
                 {
                     Caption = 'Production Info';
@@ -56,6 +110,14 @@ page 90504 "Output Header"
                     {
                         ApplicationArea = All;
                         Editable = false;
+                        trigger OnDrillDown()
+                        var
+                            ProdOrder: Record "Production Order";
+                        begin
+                            ProdOrder.SetRange("No.", POLine."Prod. Order No.");
+                            if ProdOrder.FindFirst() then
+                                PAGE.Run(PAGE::"Released Production Order", ProdOrder);
+                        end;
                     }
                     field("Routing Reference No."; POLine."Routing Reference No.")
                     {
@@ -95,22 +157,16 @@ page 90504 "Output Header"
 
                         trigger OnValidate()
                         begin
-                            // Allow negative quantities for corrections/reversals
                             ValidateOutputQuantityCustom();
                         end;
                     }
                     field("Applies-to Entry"; Rec."Applies-to Entry")
                     {
                         ApplicationArea = All;
-
-                        // trigger OnLookup(var Text: Text): Boolean
-                        // begin
-                        //     SelectAppliesToEntry();
-                        //     exit(true); // ถ้าคุณจัดการเอง
-                        // end;
                     }
                     field("Production Location_Code"; ProdOrderRec."Location Code")
                     {
+                        Caption = 'Location Code';
                         ApplicationArea = All;
                         Editable = true;
                     }
@@ -123,6 +179,30 @@ page 90504 "Output Header"
                     {
                         ApplicationArea = All;
 
+                        // trigger OnValidate()
+                        // var
+                        //     POText: Text;
+                        //     RoutingText: Text;
+                        //     Parts: List of [Text];
+                        //     LocationText: Text;
+                        //     RoutingRefText: Text;
+                        // begin
+                        //     Parts := ProdOrderRec."Production Scan".Split('|');
+
+                        //     if Parts.Count() >= 1 then
+                        //         POText := DelChr(Parts.Get(1), '<>', ' ');
+
+                        //     if Parts.Count() >= 2 then
+                        //         RoutingText := DelChr(Parts.Get(2), '<>', ' ');
+
+                        //     if Parts.Count() >= 3 then
+                        //         LocationText := DelChr(Parts.Get(3), '<>', ' ');
+
+                        //     if Parts.Count() >= 4 then
+                        //         RoutingRefText := DelChr(Parts.Get(4), '<>', ' ');
+
+                        //     ProcessProductionScanData(POText, RoutingText, LocationText, RoutingRefText);
+                        // end;
                         trigger OnValidate()
                         var
                             POText: Text;
@@ -131,75 +211,62 @@ page 90504 "Output Header"
                             LocationText: Text;
                             RoutingRefText: Text;
                         begin
+                            // ตรวจสอบว่า Production Scan ไม่ว่าง
+                            if ProdOrderRec."Production Scan" = '' then
+                                exit;
+
                             Parts := ProdOrderRec."Production Scan".Split('|');
 
-                            if Parts.Count() >= 1 then
-                                POText := DelChr(Parts.Get(1), '<>', ' ');
+                            // ตรวจสอบว่าต้องมีข้อมูลอย่างน้อย 2 ส่วน (PO และ Routing)
+                            if Parts.Count() < 2 then
+                                Error('รูปแบบการสแกนไม่ถูกต้อง กรุณาใช้รูปแบบ: PO|Routing|Location|RoutingRef (Location สามารถว่างได้)');
 
-                            if Parts.Count() >= 2 then
-                                RoutingText := DelChr(Parts.Get(2), '<>', ' ');
+                            // ส่วนที่ 1: Production Order (จำเป็น)
+                            POText := DelChr(Parts.Get(1), '<>', ' ');
+                            if POText = '' then
+                                Error('กรุณาระบุหมายเลข Production Order');
 
+                            // ส่วนที่ 2: Routing (จำเป็น)  
+                            RoutingText := DelChr(Parts.Get(2), '<>', ' ');
+                            if RoutingText = '' then
+                                Error('กรุณาระบุหมายเลข Routing');
+
+                            // ส่วนที่ 3: Location (ไม่จำเป็น สามารถว่างได้)
                             if Parts.Count() >= 3 then
                                 LocationText := DelChr(Parts.Get(3), '<>', ' ');
 
+                            // ส่วนที่ 4: Routing Reference (ไม่จำเป็น)
                             if Parts.Count() >= 4 then
                                 RoutingRefText := DelChr(Parts.Get(4), '<>', ' ');
 
-                            ProdOrderRec.SetRange("No.", POText);
-                            if not ProdOrderRec.FindFirst() then
-                                Error('ไม่พบ Production Order No. %1', POText);
+                            ProcessProductionScanData(POText, RoutingText, LocationText, RoutingRefText);
+                        end;
+                    }
+                    usercontrol("QrCode Scanner"; "QrCode_Scan")
+                    {
+                        ApplicationArea = All;
 
-                            POLine.SetRange("Prod. Order No.", POText);
-                            if RoutingText <> '' then
-                                POLine.SetRange("Routing No.", RoutingText);
+                        trigger OnControlReady()
+                        begin
+                            CurrPage."QrCode Scanner".InitializeScanner();
+                        end;
 
-                            if not POLine.FindFirst() then
-                                Error('ไม่พบข้อมูลในบรรทัดสำหรับ PO %1 และ Routing No. %2', POText, RoutingText);
+                        trigger OnQrCodeScanned(QrData: Text)
+                        begin
+                            ProcessProductionScan(QrData);
+                            CurrPage.Update(false);
+                            Message('QR Code scanned successfully: %1', QrData);
+                        end;
 
-                            PORount.SetRange("Prod. Order No.", POText);
-                            PORount.SetRange("Routing Reference No.", POLine."Routing Reference No.");
-                            if PORount.FindFirst() then
-                                Rec."Operation No." := PORount."Operation No."
-                            else
-                                Error('ไม่พบ Routing Operation สำหรับ PO %1 และ Routing Ref. %2', POText, POLine."Routing Reference No.");
-
-                            if POText <> '' then
-                                Rec."Source No." := POText;
-
-                            Rec."Order No." := POText;
-                            Rec."Order Line No." := POLine."Line No.";
-                            Rec."Routing Reference No." := POLine."Routing Reference No.";
-                            Rec."Routing No." := POLine."Routing No.";
-
-                            if Rec."Entry Type" <> Rec."Entry Type"::Output then
-                                Rec.Validate("Entry Type", Rec."Entry Type"::Output);
-
-                            Rec.Validate("Item No.", POLine."Item No.");
-
-                            // Set Output Quantity without triggering standard validation
-                            SetOutputQuantityDirect(POLine."Remaining Quantity");
-
-                            // Set required fields for capacity posting
-                            if PORount."Work Center No." <> '' then begin
-                                Rec.Validate("Work Center No.", PORount."Work Center No.");
-                                Rec.Validate(Type, Rec.Type::"Work Center");
-                                Rec.Validate("No.", PORount."Work Center No.");
-                            end;
-
-                            // Initialize required variables for posting
-                            ProdOrder := ProdOrderRec;
-                            ProdOrderLineNo := POLine."Line No.";
-                            ToTemplateName := Rec."Journal Template Name";
-                            ToBatchName := Rec."Journal Batch Name";
-
-                            CurrPage.Update(true);
+                        trigger OnScanError(ErrorMessage: Text)
+                        begin
+                            Message('QR Scan Error: %1', ErrorMessage);
                         end;
                     }
                 }
             }
         }
     }
-
     actions
     {
         area(Processing)
@@ -207,23 +274,12 @@ page 90504 "Output Header"
             action(Post)
             {
                 Caption = 'Post';
-                Image = Post;
+                Image = PostDocument;
                 ShortCutKey = 'F9';
 
                 trigger OnAction()
                 begin
                     PostOutput();
-                end;
-            }
-
-            action(PostAndPrint)
-            {
-                Caption = 'Post and Print';
-                Image = PostPrint;
-
-                trigger OnAction()
-                begin
-                    PostOutput(true);
                 end;
             }
 
@@ -236,6 +292,17 @@ page 90504 "Output Header"
                     ClearCurrentLine();
                 end;
             }
+
+            action(CreateNewLine)
+            {
+                Caption = 'Create New Line';
+                Image = New;
+
+                trigger OnAction()
+                begin
+                    CreateNewOutputLine();
+                end;
+            }
         }
 
         area(Promoted)
@@ -244,15 +311,25 @@ page 90504 "Output Header"
             {
                 Caption = 'Process';
                 actionref(Post_Promoted; Post) { }
-                actionref(PostAndPrint_Promoted; PostAndPrint) { }
             }
             group(Category_Actions)
             {
                 Caption = 'Actions';
                 actionref(ClearLine_Promoted; ClearLine) { }
+                actionref(CreateNewLine_Promoted; CreateNewLine) { }
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        InitializePage();
+    end;
+
+    trigger OnNewRecord(BelowxRec: Boolean)
+    begin
+        InitializeNewRecord();
+    end;
 
     var
         ProdOrderRec: Record "Production Order";
@@ -267,6 +344,204 @@ page 90504 "Output Header"
         FlushingFilter: Enum "Flushing Method Filter";
         AllowNegativeOutput: Boolean;
 
+    local procedure InitializePage()
+    var
+        ItemJnlTemplate: Record "Item Journal Template";
+        ItemJnlBatch: Record "Item Journal Batch";
+    begin
+        // Auto-select default template if not set
+        if Rec."Journal Template Name" = '' then begin
+            ItemJnlTemplate.SetRange(Type, ItemJnlTemplate.Type::Output);
+            if ItemJnlTemplate.FindFirst() then begin
+                Rec."Journal Template Name" := ItemJnlTemplate.Name;
+                ToTemplateName := ItemJnlTemplate.Name;
+            end;
+        end;
+
+        // Auto-select or create default batch
+        if (Rec."Journal Template Name" <> '') and (Rec."Journal Batch Name" = '') then
+            SetDefaultBatch();
+
+        // Initialize default values if new record
+        if Rec."Document Date" = 0D then
+            Rec."Document Date" := WorkDate();
+        if Rec."Posting Date" = 0D then
+            Rec."Posting Date" := WorkDate();
+    end;
+
+    local procedure InitializeNewRecord()
+    begin
+        Rec."Entry Type" := Rec."Entry Type"::Output;
+        Rec."Document Date" := WorkDate();
+        Rec."Posting Date" := WorkDate();
+
+        // Set template and batch if available
+        if ToTemplateName <> '' then
+            Rec."Journal Template Name" := ToTemplateName;
+        if ToBatchName <> '' then
+            Rec."Journal Batch Name" := ToBatchName;
+    end;
+
+    local procedure SetDefaultBatch()
+    var
+        ItemJnlBatch: Record "Item Journal Batch";
+    begin
+        if Rec."Journal Template Name" = '' then
+            exit;
+
+        ItemJnlBatch.SetRange("Journal Template Name", Rec."Journal Template Name");
+        if not ItemJnlBatch.FindFirst() then begin
+            // Create default batch if none exists
+            CreateDefaultBatch();
+            ItemJnlBatch.SetRange("Journal Template Name", Rec."Journal Template Name");
+            ItemJnlBatch.FindFirst();
+        end;
+
+        Rec."Journal Batch Name" := ItemJnlBatch.Name;
+        ToBatchName := ItemJnlBatch.Name;
+    end;
+
+    local procedure CreateDefaultBatch()
+    var
+        ItemJnlBatch: Record "Item Journal Batch";
+    // NoSeriesMgt: Codeunit NoSeriesManagement;
+    begin
+        ItemJnlBatch.Init();
+        ItemJnlBatch."Journal Template Name" := Rec."Journal Template Name";
+        ItemJnlBatch.Name := 'DEFAULT';
+        ItemJnlBatch.Description := 'Default Output Journal Batch';
+        if ItemJnlBatch.Insert() then;
+    end;
+
+    local procedure CreateNewOutputLine()
+    var
+        NewItemJnlLine: Record "Item Journal Line";
+        ItemJnlMgt: Codeunit ItemJnlManagement;
+        LineNo: Integer;
+    begin
+        // Validate required fields
+        if Rec."Journal Template Name" = '' then
+            Error('กรุณาระบุ Journal Template Name ก่อน');
+        if Rec."Journal Batch Name" = '' then
+            Error('กรุณาระบุ Journal Batch Name ก่อน');
+
+        // Get next line number
+        NewItemJnlLine.SetRange("Journal Template Name", Rec."Journal Template Name");
+        NewItemJnlLine.SetRange("Journal Batch Name", Rec."Journal Batch Name");
+        if NewItemJnlLine.FindLast() then
+            LineNo := NewItemJnlLine."Line No." + 10000
+        else
+            LineNo := 10000;
+
+        // Create new line
+        NewItemJnlLine.Init();
+        NewItemJnlLine."Journal Template Name" := Rec."Journal Template Name";
+        NewItemJnlLine."Journal Batch Name" := Rec."Journal Batch Name";
+        NewItemJnlLine."Line No." := LineNo;
+        NewItemJnlLine."Entry Type" := NewItemJnlLine."Entry Type"::Output;
+        NewItemJnlLine."Document Date" := WorkDate();
+        NewItemJnlLine."Posting Date" := WorkDate();
+        NewItemJnlLine.Insert();
+
+        // Navigate to new line
+        Rec := NewItemJnlLine;
+        CurrPage.Update(false);
+
+        Message('สร้าง Output Journal Line ใหม่เรียบร้อยแล้ว');
+    end;
+
+    local procedure ProcessProductionScanData(POText: Text; RoutingText: Text; LocationText: Text; RoutingRefText: Text)
+    begin
+        // Validate that we have a journal line to work with
+        if Rec."Journal Template Name" = '' then
+            Error('กรุณาระบุ Journal Template Name ก่อน');
+        if Rec."Journal Batch Name" = '' then
+            Error('กรุณาระบุ Journal Batch Name ก่อน');
+
+        // If current record is not inserted, insert it first
+        if not Rec.Find() then begin
+            if Rec."Line No." = 0 then
+                Rec."Line No." := 10000;
+            Rec.Insert();
+        end;
+
+        // Find Production Order
+        ProdOrderRec.SetRange("No.", POText);
+        if not ProdOrderRec.FindFirst() then
+            Error('ไม่พบ Production Order No. %1', POText);
+
+        // Find Production Order Line
+        POLine.SetRange("Prod. Order No.", POText);
+        if RoutingText <> '' then
+            POLine.SetRange("Routing No.", RoutingText);
+
+        if not POLine.FindFirst() then
+            Error('ไม่พบข้อมูลในบรรทัดสำหรับ PO %1 และ Routing No. %2', POText, RoutingText);
+
+        // Find Routing Operation
+        PORount.SetRange("Prod. Order No.", POText);
+        PORount.SetRange("Routing Reference No.", POLine."Routing Reference No.");
+        if PORount.FindFirst() then
+            Rec."Operation No." := PORount."Operation No."
+        else
+            Error('ไม่พบ Routing Operation สำหรับ PO %1 และ Routing Ref. %2', POText, POLine."Routing Reference No.");
+
+        // Update record fields
+        Rec."Source No." := POText;
+        Rec."Order No." := POText;
+        Rec."Document No." := POText;
+        Rec."Order Type" := Rec."Order Type"::Production;
+        Rec."Order Line No." := POLine."Line No.";
+        Rec."Routing Reference No." := POLine."Routing Reference No.";
+        Rec."Routing No." := POLine."Routing No.";
+
+        if Rec."Entry Type" <> Rec."Entry Type"::Output then
+            Rec.Validate("Entry Type", Rec."Entry Type"::Output);
+
+        Rec.Validate("Item No.", POLine."Item No.");
+        SetOutputQuantityDirect(POLine."Remaining Quantity");
+
+        if PORount."Work Center No." <> '' then begin
+            Rec.Validate("Work Center No.", PORount."Work Center No.");
+            Rec.Validate(Type, Rec.Type::"Work Center");
+            Rec.Validate("No.", PORount."Work Center No.");
+        end;
+
+        // Save the record
+        Rec.Modify();
+
+        // Update global variables
+        ProdOrder := ProdOrderRec;
+        ProdOrderLineNo := POLine."Line No.";
+        ToTemplateName := Rec."Journal Template Name";
+        ToBatchName := Rec."Journal Batch Name";
+
+        CurrPage.Update(true);
+    end;
+
+    local procedure ProcessProductionScan(QrData: Text)
+    var
+        POText, RoutingText, LocationText, RoutingRefText : Text;
+        Parts: List of [Text];
+    begin
+        Parts := QrData.Split('|');
+
+        if Parts.Count() >= 1 then
+            POText := DelChr(Parts.Get(1), '<>', ' ');
+
+        if Parts.Count() >= 2 then
+            RoutingText := DelChr(Parts.Get(2), '<>', ' ');
+
+        if Parts.Count() >= 3 then
+            LocationText := DelChr(Parts.Get(3), '<>', ' ');
+
+        if Parts.Count() >= 4 then
+            RoutingRefText := DelChr(Parts.Get(4), '<>', ' ');
+
+        ProcessProductionScanData(POText, RoutingText, LocationText, RoutingRefText);
+    end;
+
+    // Keep all your existing procedures here...
     local procedure PostOutput(Print: Boolean)
     begin
         // Validate essential fields
@@ -306,8 +581,8 @@ page 90504 "Output Header"
 
         if Rec."Output Quantity" < 0 then
             Message('Output correction posted successfully')
-        else
-            Message('Output posted successfully');
+        // else
+        // Message('Output posted successfully');
     end;
 
     local procedure PostOutput()
@@ -352,29 +627,6 @@ page 90504 "Output Header"
         Rec.Quantity := NewOutputQty;
     end;
 
-    local procedure SelectAppliesToEntry()
-    var
-        ItemLedgEntry: Record "Item Ledger Entry";
-        ItemLedgerEntries: Page "Item Ledger Entries";
-    begin
-        ItemLedgEntry.SetCurrentKey("Item No.", Open, "Variant Code", Positive, "Location Code", "Posting Date");
-        ItemLedgEntry.SetRange("Item No.", Rec."Item No.");
-        ItemLedgEntry.SetRange("Entry Type", ItemLedgEntry."Entry Type"::Output);
-        if Rec."Order No." <> '' then begin
-            ItemLedgEntry.SetRange("Order Type", ItemLedgEntry."Order Type"::Production);
-            ItemLedgEntry.SetRange("Order No.", Rec."Order No.");
-        end;
-
-        ItemLedgerEntries.SetTableView(ItemLedgEntry);
-        ItemLedgerEntries.SetRecord(ItemLedgEntry);
-        ItemLedgerEntries.LookupMode := true;
-
-        if ItemLedgerEntries.RunModal() = ACTION::LookupOK then begin
-            ItemLedgerEntries.GetRecord(ItemLedgEntry);
-            Rec."Applies-to Entry" := ItemLedgEntry."Entry No.";
-        end;
-    end;
-
     local procedure ClearCurrentLine()
     begin
         Rec."Output Quantity" := 0;
@@ -389,6 +641,7 @@ page 90504 "Output Header"
         CurrPage.Update(true);
     end;
 
+    // Add all other existing procedures here...
     local procedure PostItemJournalFromProduction(Print: Boolean)
     var
         ProductionOrder: Record "Production Order";
@@ -470,7 +723,7 @@ page 90504 "Output Header"
         end;
     end;
 
-    // Helper procedures that may need to be implemented based on your table extension
+    // Helper procedures
     local procedure SubcontractingWorkCenterUsed(): Boolean
     var
         WorkCenter: Record "Work Center";
@@ -489,14 +742,12 @@ page 90504 "Output Header"
         ProdOrderRtngLine: Record "Prod. Order Routing Line";
     begin
         // Add logic to check if operation is finished
-        // This is typically handled by the standard Item Journal Line validation
     end;
 
     local procedure LastOutputOperation(ItemJnlLine: Record "Item Journal Line"): Boolean
     var
         ProdOrderRtngLine: Record "Prod. Order Routing Line";
     begin
-        // Check if this is the last operation in the routing
         ProdOrderRtngLine.SetRange("Prod. Order No.", ItemJnlLine."Order No.");
         ProdOrderRtngLine.SetRange("Routing Reference No.", ItemJnlLine."Routing Reference No.");
         if ProdOrderRtngLine.FindLast() then

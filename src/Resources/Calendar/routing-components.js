@@ -138,6 +138,19 @@ function SetComponentText(jsonText) {
     "L": "ลิตร",
     "ML": "มิลลิลิตร"
   };
+  // 🎯 แผนที่ไอคอนแบบเคลื่อนไหวตามหน่วยนับ
+  const unitIconMap = {
+    "ชิ้น": "fas fa-cube fa-bounce",           // ชิ้น/piece - กระดอน
+    "แพ็ค": "fas fa-box fa-shake",             // แพ็ค - สั่น
+    "พาเลท": "fas fa-pallet fa-flip",          // พาเลท - พลิก
+    "ชุด": "fas fa-layer-group fa-fade",       // ชุด/set - จางหาย
+    "ตัน": "fas fa-weight-hanging fa-bounce",  // ตัน - กระดอน
+    "กิโลกรัม": "fas fa-balance-scale fa-beat", // กิโลกรัม - เต้น
+    "กรัม": "fas fa-feather-alt fa-beat-fade", // กรัม - เต้นจางหาย
+    "ลิตร": "fas fa-flask fa-shake",           // ลิตร - สั่น
+    "มิลลิลิตร": "fas fa-tint fa-bounce",      // มิลลิลิตร - กระดอน
+    "ไม่ระบุ": "fas fa-question-circle fa-spin" // ไม่ระบุ - หมุน
+  };
 
   // 🔢 รวมยอดตามหน่วยนับ
   const unitTotals = {};
@@ -179,10 +192,12 @@ function SetComponentText(jsonText) {
     const due = comp.DueDate || "-";
     const unit = (comp.UnitofMeasure || "").toUpperCase();
     const unitName = unitNameMap[unit] || unit || "ไม่ระบุ";
+    // 🎯 เลือกไอคอนตามหน่วยนับ
+    const iconClass = unitIconMap[unitName] || unitIconMap["ไม่ระบุ"];
 
     html += `
       <li class="component-card" onclick="viewComponents('${prodOrderNo}')">
-        <div class="component-icon"><i class="fas fa-cube"></i></div>
+        <div class="component-icon"><i class="${iconClass}"></i></div>
         <div class="flex-grow-1">
           <div class="fw-bold">${desc}</div>
           <div class="text-muted small">Due Date: ${due}</div>

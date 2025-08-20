@@ -331,13 +331,15 @@
   width: 248px;
   height: 248px;
   /* background-image: url('https://i.imgur.com/Y0CpQjP.gif'); */
-  background-image: url('https://media1.giphy.com/avatars/CapyFun/T5KMa9eGZyUO.gif');
+  /* background-image: url('https://media1.giphy.com/avatars/CapyFun/T5KMa9eGZyUO.gif'); */
+  background-image: url("../imgs/coin_gif.gif");
   background-size: contain;
   background-repeat: no-repeat;
   opacity: 0.8;
   pointer-events: none;
   z-index: 20; /* ซ้อนอยู่ข้างหน้า */
-  transform: rotate(-10deg); /* เอียงเล็กน้อยให้ดูติดสติ๊กเกอร์ */
+  /* transform: rotate(-10deg); */
+   /* เอียงเล็กน้อยให้ดูติดสติ๊กเกอร์ */
   filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2)); /* ใส่เงา */
 }
 

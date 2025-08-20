@@ -76,12 +76,17 @@ function showEventDetails(event) {
     </div>
     ` : ''}
     
-    <div class="detail-card">
-      <h5><i class="fas fa-tools me-2"></i> รายละเอียดเพิ่มเติม</h5>
-      <button class="btn btn-primary btn-sm" onclick="viewProdOrder('${id}')">
-        🔍
-      </button>
-    </div>
+    <div class="detail-card shadow-sm p-3 rounded-4 border-0 bg-light position-relative">
+  <div class="d-flex align-items-center justify-content-between">
+    <h5 class="m-0 fw-bold text-primary">
+      <i class="fas fa-tools me-2"></i> รายละเอียดเพิ่มเติม
+    </h5>
+    <button class="btn btn-gradient btn-sm d-flex align-items-center" onclick="viewProdOrder('${id}')">
+      <i class="fas fa-search me-1"></i> ตรวจสอบ
+    </button>
+  </div>
+</div>
+
   `;
 
   showDetailPanel();

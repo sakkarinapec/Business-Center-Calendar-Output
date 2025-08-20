@@ -131,7 +131,6 @@ page 90501 "Calendar ap"
                 ApplicationArea = All;
                 Caption = 'Undo Last Date Change';
                 Image = Undo;
-
                 trigger OnAction()
                 var
                     POLine: Record "Prod. Order Line";
@@ -304,12 +303,12 @@ page 90501 "Calendar ap"
                 actionref(Show_Promoted6; "UndoAllDateChanges") { }
 
             }
-            group(Category_Test)
-            {
-                Caption = 'Test data';
-                actionref(Show_Promoted4; "OpenComponentsPage") { }
-                actionref(Show_Promoted5; "CheckComponents") { }
-            }
+            // group(Category_Test)
+            // {
+            //     Caption = 'Test data';
+            //     actionref(Show_Promoted4; "OpenComponentsPage") { }
+            //     actionref(Show_Promoted5; "CheckComponents") { }
+            // }
         }
     }
     var

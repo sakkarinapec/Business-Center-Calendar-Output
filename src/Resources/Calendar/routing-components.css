@@ -129,7 +129,149 @@ button.btn-toggle:hover {
 }
 
 
-/* ********************************************* */
+/* *****************component**************************** */
+/* ============================================= */
+/* TIMELINE STYLES */
+/* ============================================= */
+.timeline {
+  padding: 20px;
+}
+
+.timeline-step {
+  position: relative;
+  padding: 20px 0 20px 50px;
+  border-left: 2px solid #dee2e6;
+  margin-left: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.timeline-step:hover .step-content {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.step-number {
+  position: absolute;
+  left: -25px;
+  top: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  z-index: 2;
+}
+
+.step-content {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.step-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #343a40;
+}
+
+.step-status {
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.status-icon {
+  margin-right: 8px;
+  font-size: 1.2rem;
+}
+
+.progress-container {
+  height: 10px;
+  background: #e9ecef;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 5px;
+}
+
+/* Timeline Status Colors */
+.completed .step-number {
+  background: #28a745;
+}
+
+.inprogress .step-number {
+  background: #ffc107;
+}
+
+.pending .step-number {
+  background: #6c757d;
+}
+
+.completed .step-status {
+  color: #28a745;
+}
+
+.inprogress .step-status {
+  color: #ffc107;
+}
+
+.pending .step-status {
+  color: #6c757d;
+}
+
+.completed .progress-bar {
+  background: #28a745;
+}
+
+.inprogress .progress-bar {
+  background: #ffc107;
+}
+
+.pending .progress-bar {
+  background: #6c757d;
+}
+
+.routing-detail {
+  background: #f9f9f9;
+  border-left: 4px solid #ccc;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+/* ============================================= */
+/* BUTTON STYLES */
+/* ============================================= */
+button.btn-toggle {
+  all: unset;
+  color: #0d6efd;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  padding: 0;
+  margin-top: 8px;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+button.btn-toggle:hover {
+  color: #0a58ca;
+}
+
+/* ============================================= */
+/* COMPONENT STYLES */
+/* ============================================= */
 .component-list {
   list-style: none;
   padding: 0;
@@ -156,9 +298,9 @@ button.btn-toggle:hover {
 
 .component-icon {
   flex-shrink: 0;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   color: #4a6cf7;
-  width: 32px;
+  width: 40px;
   text-align: center;
   margin-top: 4px;
 }
@@ -168,8 +310,206 @@ button.btn-toggle:hover {
   color: #555;
   margin-top: 5px;
 }
+
 .custom-blue {
-  color: #007bff; /* หรือโค้ดฟ้าตามต้องการ เช่น #1e90ff */
+  color: #007bff;
 }
 
+/* ============================================= */
+/* FONTAWESOME ANIMATIONS */
+/* ============================================= */
 
+/* Bounce Animation */
+@keyframes fa-bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -30px, 0);
+  }
+  70% {
+    transform: translate3d(0, -15px, 0);
+  }
+  90% {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+.fa-bounce {
+  animation: fa-bounce 2s ease-in-out infinite;
+}
+
+/* Shake Animation */
+@keyframes fa-shake {
+  0% { transform: translate(0); }
+  6.5% { transform: translate(-6px, -1px) rotate(-1deg); }
+  18.5% { transform: translate(5px, 2px) rotate(1deg); }
+  31.5% { transform: translate(-3px, 1px) rotate(-1deg); }
+  43.5% { transform: translate(2px, -1px) rotate(1deg); }
+  50% { transform: translate(0); }
+}
+
+.fa-shake {
+  animation: fa-shake 1s ease-in-out infinite;
+}
+
+/* Flip Animation */
+@keyframes fa-flip {
+  0% { transform: perspective(400px) rotateY(0); }
+  40% { transform: perspective(400px) rotateY(-180deg); }
+  100% { transform: perspective(400px) rotateY(0); }
+}
+
+.fa-flip {
+  animation: fa-flip 2s ease-in-out infinite;
+}
+
+/* Fade Animation */
+@keyframes fa-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.fa-fade {
+  animation: fa-fade 2s ease-in-out infinite;
+}
+
+/* Beat Animation */
+@keyframes fa-beat {
+  0%, 90% { transform: scale(1); }
+  45% { transform: scale(1.25); }
+}
+
+.fa-beat {
+  animation: fa-beat 1s ease-in-out infinite;
+}
+
+/* Beat Fade Animation */
+@keyframes fa-beat-fade {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+  50% { 
+    opacity: 0.4; 
+    transform: scale(1.125); 
+  }
+}
+
+.fa-beat-fade {
+  animation: fa-beat-fade 1.5s ease-in-out infinite;
+}
+
+/* Spin Animation */
+@keyframes fa-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fa-spin {
+  animation: fa-spin 2s linear infinite;
+}
+
+/* ============================================= */
+/* ANIMATION CONTROLS */
+/* ============================================= */
+
+/* หยุดแอนิเมชันเมื่อ hover */
+.component-icon:hover .fas {
+  animation-play-state: paused;
+}
+
+/* ปรับความเร็วแอนิเมชัน */
+.fa-spin { 
+  animation-duration: 2s; 
+}
+
+.fa-bounce { 
+  animation-duration: 1.5s; 
+}
+
+.fa-shake { 
+  animation-duration: 0.8s; 
+}
+
+.fa-flip { 
+  animation-duration: 2.5s; 
+}
+
+.fa-fade { 
+  animation-duration: 2s; 
+}
+
+.fa-beat { 
+  animation-duration: 1.2s; 
+}
+
+.fa-beat-fade { 
+  animation-duration: 1.8s; 
+}
+
+/* ============================================= */
+/* UNIT SPECIFIC COLORS (Optional) */
+/* ============================================= */
+.component-icon .fa-cube { color: #007bff; }           /* ชิ้น - น้ำเงิน */
+.component-icon .fa-box { color: #ffc107; }            /* แพ็ค - เหลือง */
+.component-icon .fa-pallet { color: #6c757d; }         /* พาเลท - เทา */
+.component-icon .fa-layer-group { color: #17a2b8; }    /* ชุด - ฟ้า */
+.component-icon .fa-weight-hanging { color: #dc3545; } /* ตัน - แดง */
+.component-icon .fa-balance-scale { color: #28a745; }  /* กิโลกรัม - เขียว */
+.component-icon .fa-feather-alt { color: #6f42c1; }    /* กรัม - ม่วง */
+.component-icon .fa-flask { color: #20c997; }          /* ลิตร - เขียวมิ้นท์ */
+.component-icon .fa-tint { color: #0dcaf0; }           /* มิลลิลิตร - ฟ้าอ่อน */
+.component-icon .fa-question-circle { color: #6c757d; } /* ไม่ระบุ - เทา */
+
+/* ============================================= */
+/* RESPONSIVE DESIGN */
+/* ============================================= */
+@media (max-width: 768px) {
+  .timeline-step {
+    padding: 15px 0 15px 40px;
+    margin-left: 20px;
+  }
+  
+  .step-number {
+    left: -20px;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .component-icon {
+    font-size: 1.5rem;
+    width: 35px;
+  }
+  
+  .component-card {
+    padding: 10px;
+    gap: 10px;
+  }
+}
+
+/* ============================================= */
+/* ADDITIONAL EFFECTS */
+/* ============================================= */
+
+/* เพิ่มเอฟเฟกต์ glow เมื่อแอนิเมชัน */
+.fa-bounce:hover,
+.fa-shake:hover,
+.fa-flip:hover,
+.fa-fade:hover,
+.fa-beat:hover,
+.fa-beat-fade:hover,
+.fa-spin:hover {
+  filter: drop-shadow(0 0 8px rgba(74, 108, 247, 0.4));
+}
+
+/* เอฟเฟกต์ pulse สำหรับสถานะ In Progress */
+.inprogress .status-icon {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

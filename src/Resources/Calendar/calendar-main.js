@@ -11,11 +11,37 @@ window.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("controlAddIn");
 
   // Initialize UI
-  initializeDetailPanel(container);
-  initializeThemeSwitcher(container);
-  const themeSwitcher = container.querySelector(".theme-buttons");
-  initializeFilterContainer(themeSwitcher);
-  createShowMoreByDateControl(themeSwitcher);
+//   initializeDetailPanel(container);
+//   initializeThemeSwitcher(container);
+//   const themeSwitcher = container.querySelector(".theme-buttons");
+//   if (themeSwitcher) {
+//   themeSwitcher.style.display = "none"; // ซ่อน
+// }
+//   initializeFilterContainer(themeSwitcher);
+//   createShowMoreByDateControl(themeSwitcher);
+
+//   // สร้าง div ใหม่มารองรับ filter กับ showMore
+// const filterAndMoreContainer = document.createElement("div");
+// filterAndMoreContainer.style.display = "flex";
+// filterAndMoreContainer.style.gap = "8px";
+// container.querySelector(".some-toolbar")?.appendChild(filterAndMoreContainer);
+// // แสดง filter และ showMore ใน container ใหม่
+// initializeFilterContainer(filterAndMoreContainer);
+// createShowMoreByDateControl(filterAndMoreContainer);
+initializeDetailPanel(container);
+initializeThemeSwitcher(container);
+
+const themeSwitcher = container.querySelector(".theme-buttons");
+const hideThemeButtons = true; // true = ซ่อน, false = แสดง
+if (themeSwitcher && hideThemeButtons) {
+  // ซ่อนปุ่มใน themeSwitcher ทั้งหมด
+  [...themeSwitcher.children].forEach(child => {
+    child.style.display = "none";
+  });
+}
+// เพิ่ม filter + showMore ไว้ในตำแหน่งเดียวกันกับ theme-buttons
+initializeFilterContainer(themeSwitcher);
+createShowMoreByDateControl(themeSwitcher);
 
   const calendarEl = document.createElement("div");
   calendarEl.id = "calendar";

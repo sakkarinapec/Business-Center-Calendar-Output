@@ -33,11 +33,12 @@
   transition: background-color 0.2s ease;
 }
 #controlAddIn.theme-default .fc-button:hover {
-  background-image: url('https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/tenor_1.gif') !important;
+  /* background-image: url('https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/tenor_1.gif') !important; */
   /* background-color: #9e5c00; */
   /* background-repeat: no-repeat; */
-  background-position: center;
-  background-size: contain;
+  /* background-position: center;
+  background-size: contain; */
+  background-color: #d9f3f3;
 }
 
 #controlAddIn.theme-default .fc-daygrid-day-frame {
@@ -46,10 +47,13 @@
 }
 #controlAddIn.theme-default .fc-daygrid-day:hover {
   /* background-color: #f0f8ff; */
-  background-image: url("https://media.tenor.com/u3Qr_vUH0uUAAAAj/one-piece-pixel.gif") !important;
+  /* background-image: url("https://media.tenor.com/u3Qr_vUH0uUAAAAj/one-piece-pixel.gif") !important; */
+  /* background-image: url("https://mir-s3-cdn-cf.behance.net/project_modules/fs/d5f77c104128975.5f5bdc0d6d7b6.gif") !important;
   background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain; /* หรือ cover ตามที่ต้องการ */
+  background-position: center; */
+  /* หรือ cover ตามที่ต้องการ */
+  /* background-size: contain;  */
+  background-color: #d9f3f3;
 }
 /* Love Theme (Kirby) */
 #controlAddIn.theme-love .fc-daygrid-day:hover {

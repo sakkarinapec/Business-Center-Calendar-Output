@@ -78,7 +78,22 @@ pageextension 90500 "Released Prod. Orders Ext" extends "Released Production Ord
 
                 trigger OnAction()
                 var
-                    OutputCardPage: Page "Output Header"; // Page 90502
+                    OutputCardPage: Page "Output Header";
+                begin
+                    // OutputCardPage.SetRecord(Rec); // กำหนด record ปัจจุบันเข้าไป
+                    OutputCardPage.RunModal();
+                end;
+            }
+            action("View Output Card1")
+            {
+                ApplicationArea = All;
+                Caption = 'Output Test';
+                Image = OutputJournal;
+                ToolTip = 'เปิดหน้ารายละเอียดการสแกน Output';
+
+                trigger OnAction()
+                var
+                    OutputCardPage: Page "Output Header Card"; // Page 90502
                 begin
                     // OutputCardPage.SetRecord(Rec); // กำหนด record ปัจจุบันเข้าไป
                     OutputCardPage.RunModal();
@@ -231,7 +246,7 @@ pageextension 90500 "Released Prod. Orders Ext" extends "Released Production Ord
                 actionref(Show_Promoted; "View Calendar") { }
                 // actionref(Show_Promoted2; "View Output Header Card") { }
                 actionref(Show_Promoted6; "View Output Card") { }
-
+                // actionref(Show_Promoted11; "View Output Card1") { }
 
             }
             group(Category_Test)

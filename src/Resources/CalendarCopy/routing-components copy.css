@@ -1,0 +1,191 @@
+.timeline {
+  padding: 20px;
+}
+
+.timeline-step {
+  position: relative;
+  padding: 20px 0 20px 50px;
+  border-left: 2px solid #dee2e6;
+  margin-left: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.timeline-step:hover .step-content {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.step-number {
+  position: absolute;
+  left: -25px;
+  top: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  z-index: 2;
+}
+
+.step-content {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.step-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #343a40;
+}
+
+.step-status {
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.status-icon {
+  margin-right: 8px;
+  font-size: 1.2rem;
+}
+
+.progress-container {
+  height: 10px;
+  background: #e9ecef;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 5px;
+}
+
+.completed .step-number {
+  background: #28a745;
+}
+
+.inprogress .step-number {
+  background: #ffc107;
+}
+
+.pending .step-number {
+  background: #6c757d;
+}
+
+.completed .step-status {
+  color: #28a745;
+}
+
+.inprogress .step-status {
+  color: #ffc107;
+}
+
+.pending .step-status {
+  color: #6c757d;
+}
+
+.completed .progress-bar {
+  background: #28a745;
+}
+
+.inprogress .progress-bar {
+  background: #ffc107;
+}
+
+.pending .progress-bar {
+  background: #6c757d;
+}
+.routing-detail {
+  background: #f9f9f9;
+  border-left: 4px solid #ccc;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+button.btn-toggle {
+  all: unset; /* ลบสไตล์ปุ่มทุกอย่าง */
+  color: #0d6efd; /* สีน้ำเงินแบบลิงก์ */
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  padding: 0;
+  margin-top: 8px;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+button.btn-toggle:hover {
+  color: #0a58ca; /* สีเข้มขึ้นเวลาชี้ */
+}
+
+
+/* ********************************************* */
+.component-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.component-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 10px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.component-card:hover {
+  background-color: #f5f9ff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+}
+
+.component-icon {
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  color: #4a6cf7;
+  width: 32px;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.component-detail {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 5px;
+}
+.custom-blue {
+  color: #007bff; /* หรือโค้ดฟ้าตามต้องการ เช่น #1e90ff */
+}
+
+.component-icon .fa-cube { color: #007bff; }      /* ชิ้น - น้ำเงิน */
+.component-icon .fa-box { color: #ffc107; }       /* แพ็ค - เหลือง */
+.component-icon .fa-pallet { color: #6c757d; }    /* พาเลท - เทา */
+.component-icon .fa-layer-group { color: #17a2b8; } /* ชุด - ฟ้า */
+.component-icon .fa-weight-hanging { color: #dc3545; } /* ตัน - แดง */
+.component-icon .fa-balance-scale { color: #28a745; } /* กิโลกรัม - เขียว */
+.component-icon .fa-feather-alt { color: #6f42c1; }   /* กรัม - ม่วง */
+.component-icon .fa-flask { color: #20c997; }     /* ลิตร - เขียวมิ้นท์ */
+.component-icon .fa-tint { color: #0dcaf0; }      /* มิลลิลิตร - ฟ้าอ่อน */
+.unit-badge {
+  display: block;
+  font-size: 0.7rem;
+  color: #6c757d;
+  text-align: center;
+  margin-top: 2px;
+}
+
