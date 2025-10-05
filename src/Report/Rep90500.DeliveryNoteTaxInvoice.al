@@ -3,7 +3,7 @@ report 90500 "Delivery Note / Tax Invoice"
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
     DefaultLayout = RDLC;
-    EnableExternalImages = true; // ✅ เพิ่มบรรทัดนี้
+    EnableExternalImages = true; 
     RDLCLayout = './src/Layouts/Invoice.rdl';
     Caption = 'Report Production Order';
 

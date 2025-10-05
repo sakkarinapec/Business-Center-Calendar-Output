@@ -8,8 +8,8 @@ page 90501 "Calendar ap"
     DataCaptionFields = "Prod. Order No.", "Line No.", "Routing No.";
     Caption = 'Calendar Card AP';
     AdditionalSearchTerms = 'ap';
-    DataCaptionExpression = Format(Rec."Prod. Order No.") + ' ∙ ' + Format(Rec."Line No.") + ' ∙ ' + Format(Rec."Routing No.")
-    + ' ∙ ' + Format(Rec.Description);
+    // DataCaptionExpression = Format(Rec."Prod. Order No.") + ' ∙ ' + Format(Rec."Line No.") + ' ∙ ' + Format(Rec."Routing No.")
+    // + ' ∙ ' + Format(Rec.Description);
 
     layout
     {

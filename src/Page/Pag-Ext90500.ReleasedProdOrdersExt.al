@@ -51,24 +51,6 @@ pageextension 90500 "Released Prod. Orders Ext" extends "Released Production Ord
                         Message('พบ %1 รายการที่มี Due Date:\n\n%2', Count, MsgText);
                 end;
             }
-            action("View Output Header Card")
-            {
-                ApplicationArea = All;
-                Caption = 'Output Card Test';
-                Image = OutputJournal;
-                ToolTip = 'เปิดหน้ารายละเอียดการสแกน Output';
-
-                trigger OnAction()
-                var
-                    OutputCardPage: Page "Output Header ap"; // Page 90502
-                    EmptyProdOrder: Record "Production Order";
-                begin
-                    // ไม่ส่ง Rec ปัจจุบันเข้าไป แต่ส่ง Record ว่าง ๆ
-                    // OutputCardPage.SetRecord(EmptyProdOrder);
-                    OutputCardPage.SetRecord(Rec);
-                    OutputCardPage.RunModal();
-                end;
-            }
             action("View Output Card")
             {
                 ApplicationArea = All;
@@ -79,21 +61,6 @@ pageextension 90500 "Released Prod. Orders Ext" extends "Released Production Ord
                 trigger OnAction()
                 var
                     OutputCardPage: Page "Output Header";
-                begin
-                    // OutputCardPage.SetRecord(Rec); // กำหนด record ปัจจุบันเข้าไป
-                    OutputCardPage.RunModal();
-                end;
-            }
-            action("View Output Card1")
-            {
-                ApplicationArea = All;
-                Caption = 'Output Test';
-                Image = OutputJournal;
-                ToolTip = 'เปิดหน้ารายละเอียดการสแกน Output';
-
-                trigger OnAction()
-                var
-                    OutputCardPage: Page "Output Header Card"; // Page 90502
                 begin
                     // OutputCardPage.SetRecord(Rec); // กำหนด record ปัจจุบันเข้าไป
                     OutputCardPage.RunModal();
@@ -254,7 +221,6 @@ pageextension 90500 "Released Prod. Orders Ext" extends "Released Production Ord
                 Caption = 'Test data';
                 actionref(Show_Promoted4; "View Routing") { }
                 actionref(Show_Promoted7; "View Component") { }
-                actionref(Show_Promoted2; "View Output Header Card") { }
                 actionref(Show_Promoted8; "View Production Journal") { }
                 actionref(Show_Promoted9; "View Output Journals") { }
                 actionref(Show_Promoted1; "TestShowDueDate") { }
